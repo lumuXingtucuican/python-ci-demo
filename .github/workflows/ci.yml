@@ -1,33 +1,29 @@
 # .github/workflows/ci.yml
 name: Python CI/CD Pipeline
 
-# 触发条件：推送到main分支、提交PR到main分支时自动运行
+# 触发条件：推送到main分支、提交PR时自动运行
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
 
-# 任务
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest  # 运行环境：最新版Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
-    - name: 拉取代码
-      uses: actions/checkout@v4  # 把仓库代码拉到 runner 中
+    # 1. 拉取代码
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    - name: 设置Python环境
+    # 2. 设置Python环境（直接用最新稳定版，或指定3.11）
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: "3.11"  # 用Python 3.11，可按需修改
-        cache: 'pip'  # 缓存pip依赖，加速后续运行
+        python-version: "3.11"
 
-    - name: 安装依赖（如果有requirements.txt可替换）
+    # 3. 运行单元测试（去掉了安装依赖步骤，因为本项目无第三方依赖）
+    - name: Run unit tests
       run: |
-        python -m pip install --upgrade pip
-        # 本项目无额外依赖，若有可写 pip install -r requirements.txt
-
-    - name: 运行单元测试
-      run: |
-        python -m unittest test_calc.py -v  # 详细输出测试结果
+        python -m unittest test_calc.py -v
